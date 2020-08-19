@@ -1,0 +1,111 @@
+
+
+type: ImageCollection
+id: LANDSAT/LC08/C01/T1_TOA
+version: 1597756871742431
+bands: List (12 elements)
+properties: Object (39 properties)
+type: FeatureCollection
+id: users/gyzeternal/changtingshpedge
+version: 1591521504384129
+columns: Object (4 properties)
+properties: Object (1 property)
+
+
+
+
+//定义addNDVI函数，该函数的输入是image，然后对image执行NDVI计算，并将结果命名为ndvi
+//并将生成的ndvi添加到原有的image中
+var addNDVI = function(image) {
+  var ndvi = image.normalizedDifference(['B5', 'B4']).rename('NDVI');
+  return image.addBands(ndvi);
+};
+//选择2019年的lc8影像
+var lc82018 = l8.filterDate('2018-01-01', '2018-12-31');
+//将筛选出来的2019年的影像均执行NDVI计算并添加该结果至原影像
+var withNDVI = lc82018.map(addNDVI);
+//利用qualityMosaic()函数执行NDVI最大值筛选，并用gz的边界进行裁剪
+var greenest = withNDVI.qualityMosaic('NDVI').clip(ct);
+//对筛选出来的像素，执行NDVI计算（由于筛选出来的是包含所有波段
+//所以可以直接输出全波段影像而不仅仅是NDVI）
+//接下来显示NDVI最大值合成的结果，可以有2个方案：
+var bestndvi2018 = greenest.select('NDVI').rename('bestNDVI');
+//或者重新计算一次
+//var bestndvi = greenest.normalizedDifference(['B5', 'B4']).rename('bestNDVI');
+//添加生成的最优NDVI到图层窗口
+
+//选择2019年的lc8影像
+var lc82017 = l8.filterDate('2017-01-01', '2017-12-31');
+var withNDVI = lc82017.map(addNDVI);
+var greenest = withNDVI.qualityMosaic('NDVI').clip(ct);
+var bestndvi2017 = greenest.select('NDVI').rename('bestNDVI');
+
+var lc82016 = l8.filterDate('2016-01-01', '2016-12-31');
+var withNDVI = lc82016.map(addNDVI);
+var greenest = withNDVI.qualityMosaic('NDVI').clip(ct);
+var bestndvi2016 = greenest.select('NDVI').rename('bestNDVI');
+
+var lc82015 = l8.filterDate('2015-01-01', '2015-12-31');
+var withNDVI = lc82015.map(addNDVI);
+var greenest = withNDVI.qualityMosaic('NDVI').clip(ct);
+var bestndvi2015 = greenest.select('NDVI').rename('bestNDVI');
+
+var lc82014 = l8.filterDate('2014-01-01', '2014-12-31');
+var withNDVI = lc82014.map(addNDVI);
+var greenest = withNDVI.qualityMosaic('NDVI').clip(ct);
+var bestndvi2014 = greenest.select('NDVI').rename('bestNDVI');
+
+
+
+Export.image.toDrive({
+  image: bestndvi2018,
+  description: "l8_2018MVC", 
+  fileNamePrefix: "NDVI_MVC_2018",
+  scale: 30,
+  region:ct,
+  crs:  "EPSG:4326",
+  maxPixels: 1e13
+}); 
+
+Export.image.toDrive({
+  image: bestndvi2017,
+  description: "l8_2017MVC", 
+  fileNamePrefix: "NDVI_MVC_2017",
+  scale: 30,
+  region:ct,
+  crs:  "EPSG:4326",
+  maxPixels: 1e13
+}); 
+
+
+Export.image.toDrive({
+  image: bestndvi2016,
+  description: "l8_2016MVC", 
+  fileNamePrefix: "NDVI_MVC_2016",
+  scale: 30,
+  region:ct,
+  crs:  "EPSG:4326",
+  maxPixels: 1e13
+}); 
+
+
+Export.image.toDrive({
+  image: bestndvi2015,
+  description: "l8_2015MVC", 
+  fileNamePrefix: "NDVI_MVC_2015",
+  scale: 30,
+  region:ct,
+  crs:  "EPSG:4326",
+  maxPixels: 1e13
+}); 
+
+
+Export.image.toDrive({
+  image: bestndvi2014,
+  description: "l8_2014MVC", 
+  fileNamePrefix: "NDVI_MVC_2014",
+  scale: 30,
+  region:ct,
+  crs:  "EPSG:4326",
+  maxPixels: 1e13
+}); 
